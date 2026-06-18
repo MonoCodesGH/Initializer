@@ -58,15 +58,15 @@ This provides visibility into the startup process while keeping production envir
 Initialize all modules within a container from a `Script` or `LocalScript`:
 
 ```lua
-local Initializer = require("@game/ReplicatedStorage/Packages/Initializer")
+local Initializer = require("@game/ReplicatedStorage/Packages/Initializer");
 
-Initializer:Initialize(script.Parent.Modules)
+Initializer:Initialize(script.Parent.Modules);
 ```
 
 You can also pass additional arguments to every module's `Init()` method:
 
 ```lua
-Initializer:Initialize(script.Parent.Modules, LocalPlayer, data)
+Initializer:Initialize(script.Parent.Modules, LocalPlayer, data);
 ```
 
 Example module:
@@ -74,17 +74,14 @@ Example module:
 ```lua
 local ExampleModule = {
 	Priority = 100;
-}
+};
 
-function ExampleModule.Init(
-	self: typeof(ExampleModule),
-	LocalPlayer: Player
-): ()
-	print("Hello", LocalPlayer.Name)
-	print("ExampleModule initialized!")
+function ExampleModule.Init(self: typeof(ExampleModule), LocalPlayer: Player): ()
+	print("Hello", LocalPlayer.Name);
+	print("ExampleModule initialized!");
 end
 
-return ExampleModule
+return ExampleModule;
 ```
 
 Modules are initialized automatically in priority order. Any discovered module that exposes an `Init()` function will have that function invoked during initialization.
