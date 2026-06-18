@@ -69,7 +69,7 @@ end
 
 -- Passed arugments version
 function ExampleModule.Init(self: typeof(ExampleModule), LocalPlayer: Player): ()
-  print("Hello", LocalPlayer.Name);
+	print("Hello", LocalPlayer.Name);
 	print("ExampleModule initialized!");
 end
 
@@ -77,3 +77,49 @@ return ExampleModule;
 ```
 
 Modules are initialized automatically in priority order. Any module that exposes an `Init()` function will be executed by the Initializer.
+
+# API Reference
+
+| Method                           | Parameters                                        | Returns | Description                                                                                                                                                           |
+| -------------------------------- | ------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Initialize(container, ...args)` | `container: Instance \| string`<br>`...args: any` | `nil`   | Discovers, requires, sorts, and initializes all eligible modules within the specified container. Additional arguments are forwarded to each module's `Init()` method. |
+
+## Module Interface
+
+Modules loaded by Initializer can optionally implement the following members:
+
+| Member     | Type              | Required | Description                                                                                              |
+| ---------- | ----------------- | -------- | -------------------------------------------------------------------------------------------------------- |
+| `Priority` | `number`          | No       | Determines initialization order. Higher values initialize first. Defaults to `0` when omitted.           |
+| `Init`     | `(...any) -> any` | No       | Called automatically during initialization. Receives any arguments passed to `Initializer:Initialize()`. |
+
+## Container Resolution
+
+When a string is passed instead of an `Instance`, Initializer resolves the container automatically:
+
+| Environment | Root Service        |
+| ----------- | ------------------- |
+| Server      | `ServerStorage`     |
+| Client      | `ReplicatedStorage` |
+
+Example:
+
+```lua
+Initializer:Initialize("Services")
+```
+
+The above will resolve to:
+
+```lua
+-- Server
+ServerStorage.Services
+
+-- Client
+ReplicatedStorage.Services
+```
+
+## Module Attributes
+
+| Attribute        | Type      | Default | Description                                                                                  |
+| ---------------- | --------- | ------- | -------------------------------------------------------------------------------------------- |
+| `NoInitializing` | `boolean` | `false` | Prevents a ModuleScript or Folder and its descendants from being discovered and initialized. |
