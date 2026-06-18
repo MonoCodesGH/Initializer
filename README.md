@@ -6,7 +6,7 @@ The module recursively scans folders, safely requires discovered modules, and in
 
 While a simple loop can be used to require modules manually, Initializer provides a consistent and reusable framework for managing application startup. By centralizing module loading, dependency ordering, error handling, and debug output, it helps keep large projects organized and reduces the need for extensive Script and LocalScript bootstrap code.
 
-# Features:
+# Features
 
 * Recursive module discovery
 * Automatic `Init()` execution
@@ -39,3 +39,41 @@ When running in Studio, Initializer outputs:
 * Total startup time
 
 This provides visibility into the startup process while keeping production environments free of unnecessary logging.
+
+# Usage
+
+Initialize all modules within a container through a `LocalScript` or `Script`:
+
+```lua
+local Initializer = require("@game/ReplicatedStorage/Packages/Initializer");
+Initializer:Initialize(script);
+
+```
+
+You can also pass additional arguments to every module's `Init()` method:
+
+```lua
+Initializer:Initialize(script, LocalPlayer, data)
+```
+
+Example module:
+
+```lua
+local ExampleModule = {
+	Priority = 100;
+};
+
+function ExampleModule.Init(self: typeof(ExampleModule)): ()
+	print("ExampleModule initialized!");
+end
+
+-- Passed arugments version
+function ExampleModule.Init(self: typeof(ExampleModule), LocalPlayer: Player): ()
+  print("Hello", LocalPlayer.Name);
+	print("ExampleModule initialized!");
+end
+
+return ExampleModule;
+```
+
+Modules are initialized automatically in priority order. Any module that exposes an `Init()` function will be executed by the Initializer.
