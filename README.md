@@ -1,11 +1,41 @@
 # Initializer
 
-Initializer is a lightweight module loader used to automatically require and initialize ModuleScripts within a specified container. The Initializer recursively searches through folders, requires each ModuleScript, and invokes its `Init` method if present.
+**Initializer** is a lightweight module loader for Roblox that automatically discovers, requires, and initializes `ModuleScripts` within a specified container.
 
-Modules are initialized in a deterministic order using an optional "Priority" field, allowing control over executation order (higher priority modules run first). Modules without a Priority default to 0 and are secondarily sorted alphabetically.
+The module recursively scans folders, safely requires discovered modules, and invokes their `Init()` method when available. Initialization order is deterministic and controlled through an optional `Priority` field, allowing critical systems to start before their dependencies. Modules with higher priorities initialize first, while modules sharing the same priority are sorted alphabetically.
 
-Modules can also opt out of automatic initialization by setting a "NoInitialing" attribute to true.
+Features include:
 
-While running in Studio, the Initializer outputs debug information, including loaded modules and total initialization time.
-		
-While a simple loop could be used to require and initiate modules, this abstraction provides a more structured and reusable solution. It handles recrusive discovery, priority-based ordering, consistent initialization behavior, optional debugging output, and centralized startup logic allowing systems to scale cleanly without requiring large numbers of Scripts and LocalScripts.
+* Recursive module discovery
+* Automatic `Init()` execution
+* Priority-based initialization order
+* Alphabetical fallback sorting
+* Optional module exclusion via the `NoInitializing` attribute
+* Studio-only debug logging and performance metrics
+* Centralized startup management for scalable projects
+
+While a simple loop can be used to require modules manually, Initializer provides a consistent and reusable framework for managing application startup. By centralizing module loading, dependency ordering, error handling, and debug output, it helps keep large projects organized and reduces the need for extensive Script and LocalScript bootstrap code.
+
+### Initialization Order
+
+Modules are sorted using the following rules:
+
+1. Higher `Priority` values initialize first.
+2. Modules with equal priorities are sorted alphabetically by name.
+3. Modules without a `Priority` field default to `0`.
+
+### Excluding Modules
+
+To prevent a module or folder from being initialized automatically, set the `NoInitializing` attribute to `true`.
+
+### Debugging
+
+When running in Studio, Initializer outputs:
+
+* The initialization target container
+* Loaded module names
+* Module loading failures
+* Initialization errors with stack traces
+* Total startup time
+
+This provides visibility into the startup process while keeping production environments free of unnecessary logging.
