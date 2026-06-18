@@ -4,7 +4,9 @@
 
 The module recursively scans folders, safely requires discovered modules, and invokes their `Init()` method when available. Initialization order is deterministic and controlled through an optional `Priority` field, allowing critical systems to start before their dependencies. Modules with higher priorities initialize first, while modules sharing the same priority are sorted alphabetically.
 
-Features include:
+While a simple loop can be used to require modules manually, Initializer provides a consistent and reusable framework for managing application startup. By centralizing module loading, dependency ordering, error handling, and debug output, it helps keep large projects organized and reduces the need for extensive Script and LocalScript bootstrap code.
+
+# Features:
 
 * Recursive module discovery
 * Automatic `Init()` execution
@@ -13,8 +15,6 @@ Features include:
 * Optional module exclusion via the `NoInitializing` attribute
 * Studio-only debug logging and performance metrics
 * Centralized startup management for scalable projects
-
-While a simple loop can be used to require modules manually, Initializer provides a consistent and reusable framework for managing application startup. By centralizing module loading, dependency ordering, error handling, and debug output, it helps keep large projects organized and reduces the need for extensive Script and LocalScript bootstrap code.
 
 ### Initialization Order
 
