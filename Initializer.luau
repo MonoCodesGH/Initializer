@@ -2,6 +2,7 @@
 --[[
 	Title: Initializer (v1.5.3 updated 06/15/2026)
 	Authors: Mono (@Mono_Codes)
+	Github: https://github.com/MonoCodesGH/Initializer
 ]]
 
 -- Services
@@ -30,16 +31,6 @@ local Initializer = {
 	_sorted = {};
 };
 
---[[
-	Entry point for the system. Resolves the module container, collects modules,
-	sorts them, and executes their Init methods in order.
-	
-	@param self Private
-	@param container Instance | string -- The container to load modules from, resolves into an Instance if a string is passed
-	@param ... any -- Extra arguments to pass to initialized modules
-	
-	@return void
-]]
 function Initializer.Initialize(self: Private, container: Instance | string, ...: any): ()	
 	if (typeof(container) == "string") then
 		local root = (IS_CLIENT
@@ -76,15 +67,6 @@ function Initializer.Initialize(self: Private, container: Instance | string, ...
 	self._initialized[resolvedContainer] = true;
 end
 
---[[
-	Recursively scans a container for ModuleScripts, requires them safely, and stores
-	valid modules. Skips instances marked with "NoInitializing".
-
-	@param self Private
-	@param container Instance -- The instance to load modules from
-	
-	@return void
-]]
 function Initializer._cacheModules(self: Private, container: Instance): ()
 	for _, child in (container:GetChildren()) do
 		if (child:GetAttribute("NoInitializing")) then
@@ -109,14 +91,6 @@ function Initializer._cacheModules(self: Private, container: Instance): ()
 	end
 end
 
---[[
-	Builds a sorted execution list from cached modules. Sorts by Priority (descending),
-	then Name (ascending).
-
-	@param self Private
-	
-	@return void
-]]
 function Initializer._sortModules(self: Private): ()
 	local list: { Sortable } = {};
 	
@@ -139,15 +113,6 @@ function Initializer._sortModules(self: Private): ()
 	self._sorted = list;
 end
 
---[[
-	Executes the Init method of each module in sorted order. Collects success/failure
-	results and outputs debug information.
-
-	@param self Private
-	@param ... any -- Extra arguments to pass to initialized modules
-	
-	@return number -- Number of modules initialized
-]]
 function Initializer._initModules(self: Private, ...: any): (number)
 	local args: { any } = {...};
 	local loadedNames: { string } = {};
