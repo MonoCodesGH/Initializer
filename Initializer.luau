@@ -1,11 +1,12 @@
 --!strict
 --[[
-	Title: Initializer (v1.5.3 updated 06/15/2026)
+	Title: Initializer (v1.5.4 updated 08/10/2026)
 	Authors: Mono (@Mono_Codes)
 	Github: https://github.com/MonoCodesGH/Initializer
 ]]
 
 -- Services
+const TestService = game:GetService("TestService");
 const RunService = game:GetService("RunService");
 
 -- Constants
@@ -25,7 +26,7 @@ local function __outputMessage(output: (...any) -> (any), message: string, usePr
 end
 
 -- Class
-local Initializer = {
+const Initializer = {
 	_initialized = {};
 	_modules = {};
 	_sorted = {};
@@ -33,7 +34,7 @@ local Initializer = {
 
 function Initializer.Initialize(self: Private, container: Instance | string, ...: any): ()	
 	if (typeof(container) == "string") then
-		local root = (IS_CLIENT
+		const root = (IS_CLIENT
 			and game:GetService("ReplicatedStorage")
 			or game:GetService("ServerStorage")
 		);
@@ -45,36 +46,39 @@ function Initializer.Initialize(self: Private, container: Instance | string, ...
 		__outputMessage(error, `Could not resolve container as Instance, got {typeof(container)}`, true);
 	end
 	
-	local resolvedContainer: Instance = container :: Instance;
+	const resolvedContainer: Instance = container :: Instance;
 	assert(not self._initialized[resolvedContainer], (`{SIDE_PREFIX} systems under {resolvedContainer:GetFullName()} are already initialized.`));
 	
-	local startTime: number = os.clock();
+	const startTime = os.clock();
 	
 	__outputMessage(print,
-		(`Initializing {IS_SERVER and "Server" or "Client"} modules in {resolvedContainer:GetFullName()}`),
+		(`Initializing {SIDE_PREFIX} modules in {resolvedContainer:GetFullName()}`),
 		true
 	);
 	
 	self:_cacheModules(resolvedContainer);
 	self:_sortModules();
-	self:_initModules(...);
 	
-	__outputMessage(print,
-		(`{SIDE_PREFIX} initialized after {string.format("%.3f", os.clock() - startTime)} seconds!\n`),
-		true
-	);
+	const totalModules = self:_initModules(...);
+	const timeToLoad = `Total time to initialize: {string.format(`%.2f`, os.clock() - startTime)} seconds`;
+	const totalComponents = `Total Components loaded: {totalModules}`;
+	TestService:Message(`\n\n{script.Name}\n\nSuccessfully initialized {SIDE_PREFIX} systems!\n{timeToLoad}\n{totalComponents}`);
 	
 	self._initialized[resolvedContainer] = true;
 end
 
 function Initializer._cacheModules(self: Private, container: Instance): ()
+	if (container:GetAttribute("NoInitializing")) then
+		return;
+	end
+	
 	for _, child in (container:GetChildren()) do
 		if (child:GetAttribute("NoInitializing")) then
 			continue;
 		end
 		
 		if (child:IsA("ModuleScript")) then
-			local success: boolean, module: any = pcall(require, child);
+			const success, module = pcall(require, child);
 			
 			if (success and module) then
 				self._modules[child.Name] = module;
@@ -92,7 +96,7 @@ function Initializer._cacheModules(self: Private, container: Instance): ()
 end
 
 function Initializer._sortModules(self: Private): ()
-	local list: { Sortable } = {};
+	const list: { Sortable } = {};
 	
 	for name, module in (self._modules) do
 		list[#list + 1] = {
@@ -102,7 +106,7 @@ function Initializer._sortModules(self: Private): ()
 		};
 	end
 	
-	table.sort(list, function(a: Sortable, b: Sortable)
+	table.sort(list, function(a: Sortable, b: Sortable): (boolean)
 		if (a.Priority == b.Priority) then
 			return a.Name < b.Name;
 		end
@@ -114,14 +118,14 @@ function Initializer._sortModules(self: Private): ()
 end
 
 function Initializer._initModules(self: Private, ...: any): (number)
-	local args: { any } = {...};
-	local loadedNames: { string } = {};
+	const args = {...};
+	const loadedNames = {};
 	
 	for _, entry in (self._sorted) do		
 		if (typeof(entry.Module.Init) == "function") then
-			local success: boolean, err: any = xpcall(function()
+			const success, err = xpcall(function(): (string)
 				return entry.Module:Init(table.unpack(args));
-			end, function(message: string?)
+			end, function(message: string?): (string?)
 				return debug.traceback(message);
 			end)
 			
