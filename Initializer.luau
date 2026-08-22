@@ -25,6 +25,32 @@ local function __outputMessage(output: (...any) -> (any), message: string, usePr
 	output(usePrefix and (`[{script.Name}]: {message}`) or message);
 end
 
+-- Types
+export type Initializer = {
+	Initialize: (self: Initializer, container: Instance | string, ...any) -> ();
+};
+
+type Private = Initializer & {
+	_initialized: { [Instance]: boolean };
+	_modules: { [string]: Initializable };
+	_sorted: { Sortable };
+	
+	_cacheModules: (self: Private, container: Instance) -> ();
+	_sortModules: (self: Private) -> ();
+	_initModules: (self: Private, ...any) -> (number);
+};
+
+type Initializable = {
+	Priority: number?;
+	Init: (self: Initializable, ...any) -> (any)
+};
+
+type Sortable = {
+	Name: string;
+	Module: Initializable;
+	Priority: number;
+};
+
 -- Class
 const Initializer = {
 	_initialized = {};
@@ -149,31 +175,5 @@ function Initializer._initModules(self: Private, ...: any): (number)
 	
 	return #loadedNames;
 end
-
--- Types
-export type Initializer = {
-	Initialize: (self: Initializer, container: Instance | string, ...any) -> ();
-};
-
-type Private = Initializer & {
-	_initialized: { [Instance]: boolean };
-	_modules: { [string]: Initializable };
-	_sorted: { Sortable };
-	
-	_cacheModules: (self: Private, container: Instance) -> ();
-	_sortModules: (self: Private) -> ();
-	_initModules: (self: Private, ...any) -> (number);
-};
-
-type Initializable = {
-	Priority: number?;
-	Init: (self: Initializable, ...any) -> (any)
-};
-
-type Sortable = {
-	Name: string;
-	Module: Initializable;
-	Priority: number;
-};
 
 return Initializer :: Initializer;
