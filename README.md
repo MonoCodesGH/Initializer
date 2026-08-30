@@ -34,7 +34,7 @@ Modules are sorted using the following rules:
 To prevent a `ModuleScript` or `Folder` from being discovered and initialized automatically, set the `NoInitializing` attribute to `true`.
 
 ```lua
-folder:SetAttribute("NoInitializing", true)
+folder:SetAttribute("NoInitializing", true);
 ```
 
 ## Initialization Safety
