@@ -113,7 +113,7 @@ When a string is passed instead of an `Instance`, Initializer resolves the conta
 Example:
 
 ```lua
-Initializer:Initialize("Services")
+Initializer:Initialize("Services");
 ```
 
 The above resolves to:
